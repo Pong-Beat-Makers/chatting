@@ -28,7 +28,8 @@ python manage.py runserver
 
 ### 접속
 
-path : /ws/chatting/
+path : /ws/chatting/ <br>
+header : `Key : Authorization | Value : <JWT token>`
 
 ### 메시지 전송
 
