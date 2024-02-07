@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import ChattingUser
 
+
 class ChattingConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         user_data = await self.auth()
@@ -15,20 +16,30 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         # DB에 최초 접속이면 추가, 기존이면 온라인 갱신 및 채널 갱신.
         await database_sync_to_async(self.update_user_status_connect)()
 
-
     async def disconnect(self, close_code):
         # DB에서 오프라인
         await database_sync_to_async(self.update_user_status_disconnect)()
 
-
     async def receive_json(self, content, **kwargs):
-        # target_nickname = self.scope['url_route']['kwargs']['target_nickname']
-        # target_channel = await self.getTargetChannel(target_nickname)
-        pass
+        target_nickname = content['target_nickname']
+        target_channel_name = await database_sync_to_async(self.get_target_channel)(target_nickname)
+        if target_channel_name is None:
+            await self.send_json({'error': 'No User or Offline'})
+        else:
+            data = {
+                "type": "chat_message",
+                "message": content['message'],
+                "from": self.user_nickname
+            }
+            await self.channel_layer.send(target_channel_name, data)  #대상에게 보냄
+            await self.send_json(data)  # 자기자신에게도 보냄
 
     # my function
 
-    # 인증서버에서 인증 받아오는 함수,
+    async def chat_message(self, event):
+        await self.send_json(event)
+
+    # 인증 서버에서 인증 받아 오는 함수,
     async def auth(self):
         headers = self.scope['headers']
         token = ""
@@ -45,9 +56,15 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         else:
             return None
 
-    async def getTargetChannel(self, target_nickname):
-        return "dummy_target_channel"
-        # TODO : DB에서 target_nickname을 통해 조회
+    def get_target_channel(self, target_nickname):
+        query = ChattingUser.objects.filter(nickname=target_nickname)
+        if query.count() == 0:
+            return None
+        user = query.first()
+        if not user.is_online:
+            return None
+
+        return user.channel_name
 
     def update_user_status_connect(self):
         query = ChattingUser.objects.filter(id=self.user_id)
