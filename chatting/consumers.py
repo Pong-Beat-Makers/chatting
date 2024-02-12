@@ -37,7 +37,11 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     # my function
 
     async def chat_message(self, event):
-        await self.send_json(event)
+        # 차단 조회 후 전송
+        from_nickname = event['from']
+        is_blocked = await database_sync_to_async(self.is_blocked_user)(from_nickname)
+        if not is_blocked:
+            await self.send_json(event)
 
     # 인증 서버에서 인증 받아 오는 함수,
     async def auth(self):
@@ -83,3 +87,10 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         user.is_online = False
         user.channel_name = None
         user.save()
+
+    def is_blocked_user(self, from_nickname):
+        from_user = ChattingUser.objects.get(nickname=from_nickname)
+        if ChattingUser.objects.get(id=self.user_id).blocked_users.contains(from_user):
+            return True
+        else:
+            return False
