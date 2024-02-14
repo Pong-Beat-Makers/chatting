@@ -14,7 +14,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content, **kwargs):
         # 인증 확인
         if not await self.is_auth():
-            if content['token'] is not None:
+            if 'token' in content:
                 user_data = await self.auth(content['token'])
                 if user_data is None:
                     await self.close()
