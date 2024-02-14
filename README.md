@@ -29,7 +29,19 @@ python manage.py runserver
 ### 접속
 
 path : /ws/chatting/ <br>
-header : `Key : Authorization | Value : <JWT token>`
+
+### 인증
+
+path : /ws/chatting/ (동일)
+
+형식 : json
+
+설명 : 최초 접속 후 token 정보 전송하여 인증
+```json
+{
+  "token" : "<JWT token>"
+}
+```
 
 ### 메시지 전송
 
