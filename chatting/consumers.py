@@ -1,6 +1,7 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import ChattingUser
+from .authentication import authenticate
 
 
 class ChattingConsumer(AsyncJsonWebsocketConsumer):
@@ -15,7 +16,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         # 인증 확인
         if not await self.is_auth():
             if 'token' in content:
-                user_data = await self.auth(content['token'])
+                user_data = authenticate(content['token'])
                 if user_data is None:
                     await self.close()
                     return
@@ -52,16 +53,6 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         is_blocked = await self.is_blocked_user(from_nickname)
         if not is_blocked:
             await self.send_json(event)
-
-    # 인증 서버에서 인증 받아 오는 함수,
-    async def auth(self, token):
-        if True:  # TODO: 인증 성공 시
-            return {  # TEST CODE
-                'id': token,
-                'nickname': token + "_test_id",
-            }
-        else:
-            return None
 
     @database_sync_to_async
     def get_target_channel(self, target_nickname):
