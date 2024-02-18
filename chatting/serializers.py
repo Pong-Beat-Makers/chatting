@@ -12,3 +12,9 @@ class BlockingSerializer(serializers.Serializer):
             return value
         else:
             raise ValidationError("해당 닉네임이 존재하지 않습니다.")
+
+
+class BlockedUsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChattingUser
+        fields = ['nickname']

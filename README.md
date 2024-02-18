@@ -107,3 +107,41 @@ status : 401 UNAUTHORIZED
     ]
 }
 ```
+
+### 차단 목록 조회
+
+#### 전부 조회
+path: /blockedusers/ <br>
+method : GET
+
+응답: json list
+
+```json
+[
+    {
+        "nickname": "<차단된 유저 닉네임>"
+    },
+    //...
+]
+```
+
+#### 한 유저만 조회
+path: /blockedusers/?target_nickname=<차단 조회할 유저 닉네임> <br>
+method : GET
+
+응답: json <br>
+
+status : 200 OK
+```json
+{
+    "is_blocked": <차단인지 아닌지 : boolean>
+}
+```
+
+status : 404 NOT FOUND <br>
+해당 유저 닉네임이 없을 때
+```json
+{
+    "detail": "Not found."
+}
+```
