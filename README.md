@@ -70,16 +70,16 @@ path : /ws/chatting/ (동일)
 
 ## 채팅 rest api
 
+----
 ### 차단 목록 추가
 
-path : /blockedusers/
-method : post
+path : /blockedusers/ <br>
+method : post <br>
 authentication : bearer token
 
 ```json
 {
-    "target_nickname" : "<차단하고자 하는 유저 닉네임 : string, 필수>",
-    "block_requested" : "<차단할지 유무 : boolean, 필수>"
+    "target_nickname" : "<차단하고자 하는 유저 닉네임 : string, 필수>"
 }
 ```
 
@@ -107,9 +107,30 @@ status : 401 UNAUTHORIZED
     ]
 }
 ```
+----
+### 차단 해제 
 
+path : /blockedusers/ <br>
+method : delete <br>
+authentication : bearer token
+
+```json
+{
+    "target_nickname" : "<차단하고자 하는 유저 닉네임 : string, 필수>"
+}
+```
+
+### 응답 예시
+
+#### 성공
+status : 200 OK
+
+#### 인증 실패
+status : 401 UNAUTHORIZED
+
+---
 ### 차단 목록 조회
-
+---
 #### 전부 조회
 path: /blockedusers/ <br>
 method : GET
@@ -124,7 +145,7 @@ method : GET
     //...
 ]
 ```
-
+---
 #### 한 유저만 조회
 path: /blockedusers/?target_nickname=<차단 조회할 유저 닉네임> <br>
 method : GET
