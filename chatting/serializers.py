@@ -5,7 +5,6 @@ from .models import ChattingUser
 
 class BlockingSerializer(serializers.Serializer):
     target_nickname = serializers.CharField()
-    block_requested = serializers.BooleanField()
 
     def validate_target_nickname(self, value):
         if ChattingUser.objects.filter(nickname=value).exists():
