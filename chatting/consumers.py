@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import ChattingUser
 from .authentication import authenticate
+import time
 
 
 class ChattingConsumer(AsyncJsonWebsocketConsumer):
@@ -40,7 +41,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
             data = {
                 "type": "chat_message",
                 "message": content['message'],
-                "from": self.user_nickname
+                "from": self.user_nickname,
+                "time": time.strftime("%H:%M", time.localtime())
             }
             await self.channel_layer.send(target_channel_name, data)  #대상에게 보냄
             await self.send_json(data)  # 자기자신에게도 보냄
