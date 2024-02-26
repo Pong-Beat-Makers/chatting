@@ -62,7 +62,8 @@ path : /ws/chatting/ (동일)
 {
     "type": "chat_message",
     "message": "<메시지 내용>",
-    "from": "<발신자 닉네임>"
+    "from": "<발신자 닉네임>",
+    "time": "%H%M"
 }
 ```
 
