@@ -56,6 +56,9 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         if not is_blocked:
             await self.send_json(event)
 
+    async def system_message(self, event):
+        await self.send_json(event)
+
     @database_sync_to_async
     def get_target_channel(self, target_nickname):
         query = ChattingUser.objects.filter(nickname=target_nickname)

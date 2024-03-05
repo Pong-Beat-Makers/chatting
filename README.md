@@ -74,7 +74,7 @@ path : /ws/chatting/ (동일)
 ----
 ### 차단 목록 추가
 
-path : /blockedusers/ <br>
+path : /api/chatting/blockedusers/ <br>
 method : post <br>
 authentication : bearer token
 
@@ -111,7 +111,7 @@ status : 401 UNAUTHORIZED
 ----
 ### 차단 해제 
 
-path : /blockedusers/ <br>
+path : /api/chatting/blockedusers/ <br>
 method : delete <br>
 authentication : bearer token
 
@@ -133,7 +133,7 @@ status : 401 UNAUTHORIZED
 ### 차단 목록 조회
 ---
 #### 전부 조회
-path: /blockedusers/ <br>
+path: /api/chatting/blockedusers/ <br>
 method : GET
 
 응답: json list
@@ -167,3 +167,40 @@ status : 404 NOT FOUND <br>
     "detail": "Not found."
 }
 ```
+
+---
+### 시스템 메시지
+
+path : /s2sapi/system-message/   
+method : POST   
+body : json
+description : 외부에서 요청이 아닌 시스템 내부에서 요청
+
+```json
+{
+  "target_nickname": "<전송하고자 하는 유저 닉네임>",
+  "message": "<메시지 내용>"
+}
+```
+   
+응답 : json
+
+status : 200 OK
+```json
+{
+    "type": "system_message",
+    "from": "admin",
+    "message": "<메시지 내용>",
+    "time": "<%H:%M>"
+}
+```
+
+status : 400 Bad Request   
+description : 전송 형식 오류
+
+statu : 404 Not Found
+description : 해당하는 유저가 없거나 오프라인일 때
+
+
+
+

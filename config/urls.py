@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from chatting.routing import http_urlpatterns
+from chatting.routing import http_urlpatterns, http_server_to_server_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/chatting/', include(http_urlpatterns)),
+    path('s2sapi/', include(http_server_to_server_urlpatterns)),
 ]

@@ -17,3 +17,7 @@ class BlockedUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChattingUser
         fields = ['nickname']
+
+class SystemMessageSerializer(serializers.Serializer):
+    target_nickname = serializers.CharField()
+    message = serializers.CharField()
