@@ -20,5 +20,5 @@ from chatting.routing import http_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(http_urlpatterns)),
+    path('api/chatting/', include(http_urlpatterns)),
 ]
