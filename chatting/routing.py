@@ -10,3 +10,7 @@ websocket_urlpatterns = [
 http_urlpatterns = [
     path("blockedusers/", views.BlockingView.as_view())
 ]
+
+http_server_to_server_urlpatterns = [
+    path("system-message/", views.SystemMessageView.as_view())
+]

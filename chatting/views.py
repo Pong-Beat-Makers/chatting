@@ -6,6 +6,10 @@ from django.shortcuts import get_object_or_404
 from chatting import serializers
 from .authentication import authenticate
 from .models import ChattingUser
+from channels.layers import get_channel_layer
+import time
+from asgiref.sync import async_to_sync
+
 
 class BlockingView(APIView):
     def post(self, request):
@@ -68,3 +72,26 @@ class BlockingView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class SystemMessageView(APIView):
+    def post(self, request):
+        serializer = serializers.SystemMessageSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            target_nickname = data['target_nickname']
+            message = data['message']
+            target_user = ChattingUser.objects.filter(nickname=target_nickname).first()
+            if target_user is None or target_user.is_online is False:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                channel_layer = get_channel_layer()
+                message_to_send = {
+                    'type': 'system_message',
+                    'from': 'admin',
+                    'message': message,
+                    "time": time.strftime("%H:%M", time.localtime())
+                }
+                async_to_sync(channel_layer.send)(target_user.channel_name, message_to_send)
+                return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
