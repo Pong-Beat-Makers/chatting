@@ -66,6 +66,16 @@ path : /ws/chatting/ (동일)
     "time": "%H:%M"
 }
 ```
+#### 해당 유저가 존재하지 않거나 오프라인일 때
+```json
+{
+    "type": "chat_message",
+    "error": "No User or Offline",
+    "from": "<target_nickname>",
+    "time": "%H:%M"
+}
+```
+
 
 ---
 
