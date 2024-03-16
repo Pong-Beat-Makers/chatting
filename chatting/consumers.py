@@ -36,7 +36,14 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         target_nickname = content['target_nickname']
         target_channel_name = await self.get_target_channel(target_nickname)
         if target_channel_name is None:
-            await self.send_json({'error': 'No User or Offline'})
+            await self.send_json(
+                {
+                    "type": "chat_message",
+                    "error": "No User or Offline",
+                    "from": target_nickname,
+                    "time": time.strftime("%H:%M", time.localtime())
+                }
+            )
         else:
             data = {
                 "type": "chat_message",
