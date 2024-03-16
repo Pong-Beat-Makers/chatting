@@ -1,3 +1,4 @@
+set -e
 python manage.py makemigrations chatting
 python manage.py migrate chatting
 
