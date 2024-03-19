@@ -44,6 +44,23 @@ path : /ws/chatting/ (동일)
 }
 ```
 
+응답
+
+형식 : json
+
+설명 : 온라인 상태의 유저 닉네임 제공
+```json
+{
+    "message": "You have successfully logged",
+    "online_friends": [
+        "<player1>",
+        "<player2>"
+    ]
+}
+```
+
+
+
 ### 메시지 전송
 
 path : /ws/chatting/ (동일)
@@ -208,9 +225,22 @@ status : 200 OK
 status : 400 Bad Request   
 description : 전송 형식 오류
 
-statu : 404 Not Found
+status : 404 Not Found
 description : 해당하는 유저가 없거나 오프라인일 때
 
+---
 
+### 실시간 친구 온라인 상태 확인
 
+응답 : json
 
+설명 : 새로 접속한 친구는 online 보냄, 접속 종료한 친구는 offline
+```json
+{
+    "type": "send_status",
+    "target_nickname": "<본인 닉네임>",
+    "from": "<상태 업데이트 된 유저 닉네임>",
+    "status": "<online or offline>",
+    "time": "<%H:%M>"
+}
+```
