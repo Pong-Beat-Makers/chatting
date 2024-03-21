@@ -72,11 +72,11 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(event)
 
     async def send_successful_login(self):
-        online_friends_nickname_list = await self.extract_online_friends_nickname()
+        online_friends_list = await self.extract_online_friends_nickname()
 
         message = {
             "message": "You have successfully logged",
-            "online_friends": online_friends_nickname_list,
+            "online_friends": online_friends_list,
         }
         await self.send_json(message)
 
@@ -92,7 +92,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
         for user in users:
             if user.nickname in friends_nickname_list and user.is_online:
-                online_user.append(user.nickname)
+                online_user.append((user.id, user.nickname))
 
         return online_user
 
@@ -101,14 +101,14 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(event)
 
     async def broadcast_status(self, online_or_offline: str):
-        nickname = self.user_nickname
         self.friends_list = await self.get_friends_list()
         for friend in self.friends_list:
             friend_name = friend['nickname']
             message = {
                 "type": "send_status",
                 "target_nickname": friend_name,
-                "from": nickname,
+                "from": self.user_nickname,
+                "from_id": self.user_id,
                 "status": online_or_offline,
                 "time": time.strftime("%H:%M", time.localtime()),
             }
@@ -144,6 +144,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                                         is_online=True)
         else:
             user = query.first()
+            user.nickname = self.user_nickname
             user.is_online = True
             user.channel_name = self.channel_name
             user.save()
