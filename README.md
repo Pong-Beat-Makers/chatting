@@ -53,8 +53,8 @@ path : /ws/chatting/ (동일)
 {
     "message": "You have successfully logged",
     "online_friends": [
-        "<player1>",
-        "<player2>"
+        ["<user_id1>","<user_nickname1>"],
+        ["<user_id2>","<user_nickname2>"]
     ]
 }
 ```
@@ -240,6 +240,7 @@ description : 해당하는 유저가 없거나 오프라인일 때
     "type": "send_status",
     "target_nickname": "<본인 닉네임>",
     "from": "<상태 업데이트 된 유저 닉네임>",
+    "from_id": "<상태 업데이트 된 유저 id>",
     "status": "<online or offline>",
     "time": "<%H:%M>"
 }
