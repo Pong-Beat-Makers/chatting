@@ -6,6 +6,7 @@ from .models import ChattingUser
 from .authentication import authenticate
 import time
 import requests
+from asgiref.sync import sync_to_async
 
 
 class ChattingConsumer(AsyncJsonWebsocketConsumer):
@@ -14,14 +15,15 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # DB에서 오프라인
-        await self.update_user_status_disconnect()
-        await self.broadcast_status("offline")
+        if await self.is_auth():
+            await self.update_user_status_disconnect()
+            await self.broadcast_status("offline")
 
     async def receive_json(self, content, **kwargs):
         # 인증 확인
         if not await self.is_auth():
             if 'token' in content:
-                user_data = authenticate(content['token'])
+                user_data = await sync_to_async(authenticate)(content['token'])
                 if user_data is None:
                     await self.close()
                     return

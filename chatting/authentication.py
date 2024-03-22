@@ -7,7 +7,7 @@ import requests
 def authenticate(token):
     headers = {'Authorization': 'Bearer ' + token}
     url = os.environ.get('USER_MANAGEMENT_URL')
-    res = requests.get(url + f'api/user-management/user-api/verify/', headers=headers)
+    res = requests.get(url + f's2sapi/user-management/user-api/verify/', headers=headers)
     if res.status_code == 200:
         data = res.json()
         return {
