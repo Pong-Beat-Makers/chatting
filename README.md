@@ -80,6 +80,7 @@ path : /ws/chatting/ (동일)
     "type": "chat_message",
     "message": "<메시지 내용>",
     "from": "<발신자 닉네임>",
+    "from_id" : "<발신자 id>",
     "time": "%H:%M"
 }
 ```
@@ -88,7 +89,7 @@ path : /ws/chatting/ (동일)
 {
     "type": "chat_message",
     "error": "No User or Offline",
-    "from": "<target_nickname>",
+    "from_id": "<target_id>",
     "time": "%H:%M"
 }
 ```

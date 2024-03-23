@@ -25,7 +25,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
             if 'token' in content:
                 user_data = await sync_to_async(authenticate)(content['token'])
                 if user_data is None:
-                    await self.close()
+                    await self.close(3401)
                     return
                 self.user_id = user_data['id']
                 self.user_nickname = user_data['nickname']
@@ -36,18 +36,18 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                 await self.send_successful_login()
                 return
             else:
-                await self.close()
+                await self.close(3401)
                 return
 
         # 인증 후 일반 메시지
-        target_nickname = content['target_nickname']
-        target_channel_name = await self.get_target_channel(target_nickname)
+        target_id = content['target_id']
+        target_channel_name = await self.get_target_channel_by_id(target_id)
         if target_channel_name is None:
             await self.send_json(
                 {
                     "type": "chat_message",
                     "error": "No User or Offline",
-                    "from": target_nickname,
+                    "from_id": target_id,
                     "time": time.strftime("%H:%M", time.localtime())
                 }
             )
@@ -56,6 +56,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                 "type": "chat_message",
                 "message": content['message'],
                 "from": self.user_nickname,
+                "from_id": self.user_id,
                 "time": time.strftime("%H:%M", time.localtime())
             }
             await self.channel_layer.send(target_channel_name, data)  # 대상에게 보냄
@@ -65,8 +66,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
     async def chat_message(self, event):
         # 차단 조회 후 전송
-        from_nickname = event['from']
-        is_blocked = await self.is_blocked_user(from_nickname)
+        from_id = event['from_id']
+        is_blocked = await self.is_blocked_user(from_id)
         if not is_blocked:
             await self.send_json(event)
 
@@ -74,7 +75,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(event)
 
     async def send_successful_login(self):
-        online_friends_list = await self.extract_online_friends_nickname()
+        online_friends_list = await self.extract_online_friends()
 
         message = {
             "message": "You have successfully logged",
@@ -83,17 +84,17 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(message)
 
     @database_sync_to_async
-    def extract_online_friends_nickname(self):
+    def extract_online_friends(self):
         users: list = ChattingUser.objects.all()
         friends_list = self.friends_list
-        friends_nickname_list = []
+        friends_id_list = []
 
         for friend in friends_list:
-            friends_nickname_list.append(friend['nickname'])
+            friends_id_list.append(friend['id'])
         online_user = []
 
         for user in users:
-            if user.nickname in friends_nickname_list and user.is_online:
+            if user.id in friends_id_list and user.is_online:
                 online_user.append((user.id, user.nickname))
 
         return online_user
@@ -120,16 +121,15 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.send(target_channel.channel_name, message)
 
     async def get_friends_list(self):
-        nickname = self.user_nickname
         url = os.environ.get('USER_MANAGEMENT_URL')
-        res = requests.get(url + f's2sapi/user-management/friends/?nickname={nickname}')
+        res = requests.get(url + f's2sapi/user-management/friends/?id={self.user_id}')
         if res.status_code != 200:
             return None
         return res.json()
 
     @database_sync_to_async
-    def get_target_channel(self, target_nickname):
-        query = ChattingUser.objects.filter(nickname=target_nickname)
+    def get_target_channel_by_id(self, target_id):
+        query = ChattingUser.objects.filter(id=target_id)
         if query.count() == 0:
             return None
         user = query.first()
@@ -160,8 +160,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         user.save()
 
     @database_sync_to_async
-    def is_blocked_user(self, from_nickname):
-        from_user = ChattingUser.objects.get(nickname=from_nickname)
+    def is_blocked_user(self, from_id):
+        from_user = ChattingUser.objects.get(id=from_id)
         if ChattingUser.objects.get(id=self.user_id).blocked_users.contains(from_user):
             return True
         else:
