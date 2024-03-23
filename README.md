@@ -69,7 +69,7 @@ path : /ws/chatting/ (동일)
 
 ```json
 {
-    "target_nickname" : "<대상 닉네임>",
+    "target_id" : "<대상 id>",
     "message" : "<메시지 내용>"
 }
 ```
@@ -80,6 +80,7 @@ path : /ws/chatting/ (동일)
     "type": "chat_message",
     "message": "<메시지 내용>",
     "from": "<발신자 닉네임>",
+    "from_id" : "<발신자 id>",
     "time": "%H:%M"
 }
 ```
@@ -88,7 +89,7 @@ path : /ws/chatting/ (동일)
 {
     "type": "chat_message",
     "error": "No User or Offline",
-    "from": "<target_nickname>",
+    "from_id": "<target_id>",
     "time": "%H:%M"
 }
 ```
@@ -107,7 +108,7 @@ authentication : bearer token
 
 ```json
 {
-    "target_nickname" : "<차단하고자 하는 유저 닉네임 : string, 필수>"
+    "target_id" : "<차단하고자 하는 유저 id : int, 필수>"
 }
 ```
 
@@ -117,8 +118,7 @@ authentication : bearer token
 status : 201 created
 ```json
 {
-    "target_nickname": "1002_test_id",
-    "block_requested": true
+    "target_id": "<차단된 유저 id>"
 }
 ```
 
@@ -130,8 +130,8 @@ status : 401 UNAUTHORIZED
 
 ```json
 {
-    "target_nickname": [
-        "해당 닉네임이 존재하지 않습니다."
+    "target_id": [
+        "해당 id가 존재하지 않습니다."
     ]
 }
 ```
@@ -144,7 +144,7 @@ authentication : bearer token
 
 ```json
 {
-    "target_nickname" : "<차단하고자 하는 유저 닉네임 : string, 필수>"
+    "target_id" : "<차단하고자 하는 유저 id : int, 필수>"
 }
 ```
 
@@ -168,14 +168,15 @@ method : GET
 ```json
 [
     {
-        "nickname": "<차단된 유저 닉네임>"
+      "id" : "<차단된 id>",  
+      "nickname": "<차단된 유저 닉네임>"
     },
     //...
 ]
 ```
 ---
 #### 한 유저만 조회
-path: /blockedusers/?target_nickname=<차단 조회할 유저 닉네임> <br>
+path: /blockedusers/?target_id=<차단 조회할 유저 id> <br>
 method : GET
 
 응답: json <br>
@@ -205,7 +206,7 @@ description : 외부에서 요청이 아닌 시스템 내부에서 요청
 
 ```json
 {
-  "target_nickname": "<전송하고자 하는 유저 닉네임>",
+  "target_id": "<전송하고자 하는 유저 id>",
   "message": "<메시지 내용>"
 }
 ```

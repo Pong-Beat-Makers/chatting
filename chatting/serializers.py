@@ -4,20 +4,20 @@ from rest_framework.exceptions import ValidationError
 from .models import ChattingUser
 
 class BlockingSerializer(serializers.Serializer):
-    target_nickname = serializers.CharField()
+    target_id = serializers.IntegerField()
 
-    def validate_target_nickname(self, value):
-        if ChattingUser.objects.filter(nickname=value).exists():
+    def validate_target_id(self, value):
+        if ChattingUser.objects.filter(id=value).exists():
             return value
         else:
-            raise ValidationError("해당 닉네임이 존재하지 않습니다.")
+            raise ValidationError("해당 id가 존재하지 않습니다.")
 
 
 class BlockedUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChattingUser
-        fields = ['nickname']
+        fields = ['id', 'nickname']
 
 class SystemMessageSerializer(serializers.Serializer):
-    target_nickname = serializers.CharField()
+    target_id = serializers.IntegerField()
     message = serializers.CharField()
