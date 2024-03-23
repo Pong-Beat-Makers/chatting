@@ -206,7 +206,7 @@ description : 외부에서 요청이 아닌 시스템 내부에서 요청
 
 ```json
 {
-  "target_nickname": "<전송하고자 하는 유저 닉네임>",
+  "target_id": "<전송하고자 하는 유저 id>",
   "message": "<메시지 내용>"
 }
 ```

@@ -79,9 +79,9 @@ class SystemMessageView(APIView):
         serializer = serializers.SystemMessageSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
-            target_nickname = data['target_nickname']
+            target_id = data['target_id']
             message = data['message']
-            target_user = ChattingUser.objects.filter(nickname=target_nickname).first()
+            target_user = ChattingUser.objects.filter(id=target_id).first()
             if target_user is None or target_user.is_online is False:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             else:

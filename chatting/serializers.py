@@ -19,5 +19,5 @@ class BlockedUsersSerializer(serializers.ModelSerializer):
         fields = ['id', 'nickname']
 
 class SystemMessageSerializer(serializers.Serializer):
-    target_nickname = serializers.CharField()
+    target_id = serializers.IntegerField()
     message = serializers.CharField()
