@@ -66,6 +66,9 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         # 시간 데이터 추가
         event['time'] = str(datetime.datetime.now().isoformat())
 
+        # 대상 id 추가
+        event['to_id'] = self.user_id
+
         # 차단 조회 후 전송
         from_id = event['from_id']
         is_blocked = await self.is_blocked_user(from_id)
@@ -74,6 +77,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
     async def system_message(self, event):
         event['time'] = str(datetime.datetime.now().isoformat())
+        event['to_id'] = self.user_id
+
         await self.send_json(event)
 
     async def send_successful_login(self):
@@ -82,6 +87,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         message = {
             "message": "You have successfully logged",
             "online_friends": online_friends_list,
+            "to_id": self.user_id
         }
         await self.send_json(message)
 
@@ -104,6 +110,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_status(self, event):
         event['time'] = str(datetime.datetime.now().isoformat())
+        event['to_id'] = self.user_id
+
         await self.send_json(event)
 
     async def broadcast_status(self, online_or_offline: str):
