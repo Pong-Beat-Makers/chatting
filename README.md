@@ -81,7 +81,7 @@ path : /ws/chatting/ (동일)
     "message": "<메시지 내용>",
     "from": "<발신자 닉네임>",
     "from_id" : "<발신자 id>",
-    "time": "%H:%M"
+    "time": "<ISO 8601 형식의 시각>"
 }
 ```
 #### 해당 유저가 존재하지 않거나 오프라인일 때
@@ -90,7 +90,7 @@ path : /ws/chatting/ (동일)
     "type": "chat_message",
     "error": "No User or Offline",
     "from_id": "<target_id>",
-    "time": "%H:%M"
+    "time": "<ISO 8601 형식의 시각>"
 }
 ```
 
@@ -219,7 +219,7 @@ status : 200 OK
     "type": "system_message",
     "from": "admin",
     "message": "<메시지 내용>",
-    "time": "<%H:%M>"
+    "time": "<ISO 8601 형식의 시각>"
 }
 ```
 
@@ -243,6 +243,6 @@ description : 해당하는 유저가 없거나 오프라인일 때
     "from": "<상태 업데이트 된 유저 닉네임>",
     "from_id": "<상태 업데이트 된 유저 id>",
     "status": "<online or offline>",
-    "time": "<%H:%M>"
+    "time": "<ISO 8601 형식의 시각>"
 }
 ```

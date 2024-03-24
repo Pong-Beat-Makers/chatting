@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import ChattingUser
 from .authentication import authenticate
-import time
+import datetime
 import requests
 from asgiref.sync import sync_to_async
 
@@ -48,7 +48,6 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                     "type": "chat_message",
                     "error": "No User or Offline",
                     "from_id": target_id,
-                    "time": time.strftime("%H:%M", time.localtime())
                 }
             )
         else:
@@ -57,7 +56,6 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                 "message": content['message'],
                 "from": self.user_nickname,
                 "from_id": self.user_id,
-                "time": time.strftime("%H:%M", time.localtime())
             }
             await self.channel_layer.send(target_channel_name, data)  # 대상에게 보냄
             await self.send_json(data)  # 자기자신에게도 보냄
@@ -65,6 +63,9 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     # my function
 
     async def chat_message(self, event):
+        # 시간 데이터 추가
+        event['time'] = str(datetime.datetime.now().isoformat())
+
         # 차단 조회 후 전송
         from_id = event['from_id']
         is_blocked = await self.is_blocked_user(from_id)
@@ -72,6 +73,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(event)
 
     async def system_message(self, event):
+        event['time'] = str(datetime.datetime.now().isoformat())
         await self.send_json(event)
 
     async def send_successful_login(self):
@@ -101,6 +103,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def send_status(self, event):
+        event['time'] = str(datetime.datetime.now().isoformat())
         await self.send_json(event)
 
     async def broadcast_status(self, online_or_offline: str):
@@ -113,7 +116,6 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                 "from": self.user_nickname,
                 "from_id": self.user_id,
                 "status": online_or_offline,
-                "time": time.strftime("%H:%M", time.localtime()),
             }
             target_channel: ChattingUser = await database_sync_to_async(
                 ChattingUser.objects.filter(nickname=friend_name).first)()
