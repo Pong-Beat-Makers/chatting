@@ -7,7 +7,6 @@ from chatting import serializers
 from .authentication import authenticate
 from .models import ChattingUser
 from channels.layers import get_channel_layer
-import time
 from asgiref.sync import async_to_sync
 
 
@@ -90,7 +89,6 @@ class SystemMessageView(APIView):
                     'type': 'system_message',
                     'from': 'admin',
                     'message': message,
-                    "time": time.strftime("%H:%M", time.localtime())
                 }
                 async_to_sync(channel_layer.send)(target_user.channel_name, message_to_send)
                 return Response(status=status.HTTP_200_OK)
