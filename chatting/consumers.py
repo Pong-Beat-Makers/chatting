@@ -103,7 +103,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
         for user in users:
             if user.id in friends_id_list and user.is_online:
-                online_user.append((user.id, user.nickname))
+                online_user.append(user.id)
 
         return online_user
 

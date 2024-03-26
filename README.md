@@ -53,8 +53,8 @@ path : /ws/chatting/ (동일)
 {
     "message": "You have successfully logged",
     "online_friends": [
-        ["<user_id1>","<user_nickname1>"],
-        ["<user_id2>","<user_nickname2>"]
+        ["<user_id1>",
+        "<user_id2>"]
     ],
     "to_id" : "<수신자 id>"
 }
