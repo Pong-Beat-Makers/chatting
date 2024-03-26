@@ -54,11 +54,10 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
             data = {
                 "type": "chat_message",
                 "message": content['message'],
-                "from": self.user_nickname,
                 "from_id": self.user_id,
             }
             await self.channel_layer.send(target_channel_name, data)  # 대상에게 보냄
-            await self.send_json(data)  # 자기자신에게도 보냄
+            await self.chat_message(data)  # 자기자신에게도 보냄
 
     # my function
 

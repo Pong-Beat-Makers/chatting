@@ -80,7 +80,6 @@ path : /ws/chatting/ (동일)
 {
     "type": "chat_message",
     "message": "<메시지 내용>",
-    "from": "<발신자 닉네임>",
     "from_id" : "<발신자 id>",
     "to_id" : "<수신자 id>",  
     "time": "<ISO 8601 형식의 시각>",
