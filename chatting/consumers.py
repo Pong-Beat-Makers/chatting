@@ -28,7 +28,6 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                     await self.close(3401)
                     return
                 self.user_id = user_data['id']
-                self.user_nickname = user_data['nickname']
 
                 # DB에 최초 접속이면 추가, 기존이면 온라인 갱신 및 채널 갱신.
                 await self.update_user_status_connect()
@@ -43,22 +42,20 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         target_id = content['target_id']
         target_channel_name = await self.get_target_channel_by_id(target_id)
         if target_channel_name is None:
-            await self.send_json(
-                {
-                    "type": "chat_message",
+            message = {
+                    "type": "system_message",
                     "error": "No User or Offline",
                     "from_id": target_id,
                 }
-            )
+            await self.system_message(message)
         else:
             data = {
                 "type": "chat_message",
                 "message": content['message'],
-                "from": self.user_nickname,
                 "from_id": self.user_id,
             }
             await self.channel_layer.send(target_channel_name, data)  # 대상에게 보냄
-            await self.send_json(data)  # 자기자신에게도 보냄
+            await self.chat_message(data)  # 자기자신에게도 보냄
 
     # my function
 
@@ -103,7 +100,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
 
         for user in users:
             if user.id in friends_id_list and user.is_online:
-                online_user.append((user.id, user.nickname))
+                online_user.append(user.id)
 
         return online_user
 
@@ -117,18 +114,15 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     async def broadcast_status(self, online_or_offline: str):
         self.friends_list = await self.get_friends_list()
         for friend in self.friends_list:
-            friend_name = friend['nickname']
             message = {
                 "type": "send_status",
-                "target_nickname": friend_name,
-                "from": self.user_nickname,
                 "from_id": self.user_id,
                 "status": online_or_offline,
             }
-            target_channel: ChattingUser = await database_sync_to_async(
-                ChattingUser.objects.filter(nickname=friend_name).first)()
-            if target_channel.is_online is True:
-                await self.channel_layer.send(target_channel.channel_name, message)
+            target_user: ChattingUser = await database_sync_to_async(
+                ChattingUser.objects.filter(id=friend['id']).first)()
+            if target_user is not None and target_user.is_online is True:
+                await self.channel_layer.send(target_user.channel_name, message)
 
     async def get_friends_list(self):
         url = os.environ.get('USER_MANAGEMENT_URL')
@@ -152,11 +146,10 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     def update_user_status_connect(self):
         query = ChattingUser.objects.filter(id=self.user_id)
         if query.count() == 0:
-            ChattingUser.objects.create(id=self.user_id, nickname=self.user_nickname, channel_name=self.channel_name,
+            ChattingUser.objects.create(id=self.user_id, channel_name=self.channel_name,
                                         is_online=True)
         else:
             user = query.first()
-            user.nickname = self.user_nickname
             user.is_online = True
             user.channel_name = self.channel_name
             user.save()

@@ -53,8 +53,8 @@ path : /ws/chatting/ (동일)
 {
     "message": "You have successfully logged",
     "online_friends": [
-        ["<user_id1>","<user_nickname1>"],
-        ["<user_id2>","<user_nickname2>"]
+        ["<user_id1>",
+        "<user_id2>"]
     ],
     "to_id" : "<수신자 id>"
 }
@@ -80,7 +80,6 @@ path : /ws/chatting/ (동일)
 {
     "type": "chat_message",
     "message": "<메시지 내용>",
-    "from": "<발신자 닉네임>",
     "from_id" : "<발신자 id>",
     "to_id" : "<수신자 id>",  
     "time": "<ISO 8601 형식의 시각>",
@@ -89,7 +88,7 @@ path : /ws/chatting/ (동일)
 #### 해당 유저가 존재하지 않거나 오프라인일 때
 ```json
 {
-    "type": "chat_message",
+    "type": "system_message",
     "error": "No User or Offline",
     "from_id": "<target_id>",
     "to_id" : "<수신자 id>",
@@ -171,8 +170,7 @@ method : GET
 ```json
 [
     {
-      "id" : "<차단된 id>",  
-      "nickname": "<차단된 유저 닉네임>"
+      "id" : "<차단된 id>"
     },
     //...
 ]
@@ -243,8 +241,6 @@ description : 해당하는 유저가 없거나 오프라인일 때
 ```json
 {
     "type": "send_status",
-    "target_nickname": "<본인 닉네임>",
-    "from": "<상태 업데이트 된 유저 닉네임>",
     "from_id": "<상태 업데이트 된 유저 id>",
     "to_id" : "<수신자 id>",
     "status": "<online or offline>",

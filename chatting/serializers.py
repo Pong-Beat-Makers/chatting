@@ -16,7 +16,7 @@ class BlockingSerializer(serializers.Serializer):
 class BlockedUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChattingUser
-        fields = ['id', 'nickname']
+        fields = ['id']
 
 class SystemMessageSerializer(serializers.Serializer):
     target_id = serializers.IntegerField()

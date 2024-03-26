@@ -12,7 +12,6 @@ def authenticate(token):
         data = res.json()
         return {
             'id': data['id'],
-            'nickname': data['nickname'],
         }
     else:
         return None
