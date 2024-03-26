@@ -28,7 +28,6 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                     await self.close(3401)
                     return
                 self.user_id = user_data['id']
-                self.user_nickname = user_data['nickname']
 
                 # DB에 최초 접속이면 추가, 기존이면 온라인 갱신 및 채널 갱신.
                 await self.update_user_status_connect()
@@ -147,11 +146,10 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     def update_user_status_connect(self):
         query = ChattingUser.objects.filter(id=self.user_id)
         if query.count() == 0:
-            ChattingUser.objects.create(id=self.user_id, nickname=self.user_nickname, channel_name=self.channel_name,
+            ChattingUser.objects.create(id=self.user_id, channel_name=self.channel_name,
                                         is_online=True)
         else:
             user = query.first()
-            user.nickname = self.user_nickname
             user.is_online = True
             user.channel_name = self.channel_name
             user.save()
