@@ -43,13 +43,12 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         target_id = content['target_id']
         target_channel_name = await self.get_target_channel_by_id(target_id)
         if target_channel_name is None:
-            await self.send_json(
-                {
-                    "type": "chat_message",
+            message = {
+                    "type": "system_message",
                     "error": "No User or Offline",
                     "from_id": target_id,
                 }
-            )
+            await self.system_message(message)
         else:
             data = {
                 "type": "chat_message",

@@ -88,7 +88,7 @@ path : /ws/chatting/ (동일)
 #### 해당 유저가 존재하지 않거나 오프라인일 때
 ```json
 {
-    "type": "chat_message",
+    "type": "system_message",
     "error": "No User or Offline",
     "from_id": "<target_id>",
     "to_id" : "<수신자 id>",
