@@ -117,18 +117,15 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     async def broadcast_status(self, online_or_offline: str):
         self.friends_list = await self.get_friends_list()
         for friend in self.friends_list:
-            friend_name = friend['nickname']
             message = {
                 "type": "send_status",
-                "target_nickname": friend_name,
-                "from": self.user_nickname,
                 "from_id": self.user_id,
                 "status": online_or_offline,
             }
-            target_channel: ChattingUser = await database_sync_to_async(
-                ChattingUser.objects.filter(nickname=friend_name).first)()
-            if target_channel.is_online is True:
-                await self.channel_layer.send(target_channel.channel_name, message)
+            target_user: ChattingUser = await database_sync_to_async(
+                ChattingUser.objects.filter(id=friend['id']).first)()
+            if target_user is not None and target_user.is_online is True:
+                await self.channel_layer.send(target_user.channel_name, message)
 
     async def get_friends_list(self):
         url = os.environ.get('USER_MANAGEMENT_URL')

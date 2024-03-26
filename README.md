@@ -242,8 +242,6 @@ description : 해당하는 유저가 없거나 오프라인일 때
 ```json
 {
     "type": "send_status",
-    "target_nickname": "<본인 닉네임>",
-    "from": "<상태 업데이트 된 유저 닉네임>",
     "from_id": "<상태 업데이트 된 유저 id>",
     "to_id" : "<수신자 id>",
     "status": "<online or offline>",
