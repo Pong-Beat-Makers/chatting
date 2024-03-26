@@ -247,3 +247,30 @@ description : 해당하는 유저가 없거나 오프라인일 때
     "time": "<ISO 8601 형식의 시각>"
 }
 ```
+
+---
+
+### 게임 초대 메시지
+
+요청 : json
+
+```json
+{
+  "target_id": "<초대하고자 하는 대상 id>",
+  "type" : "invite_game"
+}
+```
+
+응답 : json
+
+설명 : 수신자, 발신자 둘 다 보냄.
+```json
+{
+  "type" : "invite_game",
+  "from_id": "<수신자 id>",
+  "to_id": "<발신자 id>",
+  "time": "<ISO 8601 형식의 시각>",
+  "room_id": "<uuid 형식>"
+}
+```
+
