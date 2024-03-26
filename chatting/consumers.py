@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -7,6 +8,7 @@ from .authentication import authenticate
 import datetime
 import requests
 from asgiref.sync import sync_to_async
+from django.utils.html import escape
 
 
 class ChattingConsumer(AsyncJsonWebsocketConsumer):
@@ -43,12 +45,14 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         target_channel_name = await self.get_target_channel_by_id(target_id)
         if target_channel_name is None:
             message = {
-                    "type": "system_message",
-                    "error": "No User or Offline",
-                    "from_id": target_id,
-                }
+                "type": "system_message",
+                "error": "No User or Offline",
+                "from_id": target_id,
+            }
             await self.system_message(message)
-        else:
+            return
+
+        if 'message' in content.keys():
             data = {
                 "type": "chat_message",
                 "message": content['message'],
@@ -57,6 +61,18 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.send(target_channel_name, data)  # 대상에게 보냄
             data['to_id'] = int(target_id)
             await self.chat_message(data)  # 자기자신에게도 보냄
+            return
+
+        if 'type' in content.keys() and content['type'] == 'invite_game':
+            data = {
+                "type": "invite_game",
+                "from_id": self.user_id,
+                "room_id": str(uuid.uuid4()),
+            }
+            await self.channel_layer.send(target_channel_name, data)
+            data['to_id'] = int(target_id)
+            await self.invite_game(data)
+            return
 
     # my function
 
@@ -67,6 +83,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         # 대상 id 추가
         if 'to_id' not in event.keys():
             event['to_id'] = self.user_id
+
+        event['message'] = escape(event['message'])
 
         # 차단 조회 후 전송
         from_id = event['from_id']
@@ -90,6 +108,13 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         }
         await self.send_json(message)
 
+    async def invite_game(self, event):
+        event['time'] = str(datetime.datetime.now().isoformat())
+        if 'to_id' not in event.keys():
+            event['to_id'] = self.user_id
+
+        await self.send_json(event)
+
     @database_sync_to_async
     def extract_online_friends(self):
         users: list = ChattingUser.objects.all()
@@ -105,7 +130,6 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                 online_user.append(user.id)
 
         return online_user
-
 
     async def send_status(self, event):
         event['time'] = str(datetime.datetime.now().isoformat())
