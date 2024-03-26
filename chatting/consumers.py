@@ -55,6 +55,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
                 "from_id": self.user_id,
             }
             await self.channel_layer.send(target_channel_name, data)  # 대상에게 보냄
+            data['to_id'] = target_id
             await self.chat_message(data)  # 자기자신에게도 보냄
 
     # my function
@@ -64,7 +65,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         event['time'] = str(datetime.datetime.now().isoformat())
 
         # 대상 id 추가
-        event['to_id'] = self.user_id
+        if event['to_id'] is None:
+            event['to_id'] = self.user_id
 
         # 차단 조회 후 전송
         from_id = event['from_id']
