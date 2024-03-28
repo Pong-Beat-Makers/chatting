@@ -51,12 +51,14 @@ path : /ws/chatting/ (동일)
 설명 : 온라인 상태의 유저 닉네임 제공
 ```json
 {
+    "type": "chat_message",
     "message": "You have successfully logged",
     "online_friends": [
         ["<user_id1>",
         "<user_id2>"]
     ],
-    "to_id" : "<수신자 id>"
+    "to_id" : "<수신자 id>",
+    "time": "<ISO 8601 형식의 시각>"
 }
 ```
 
