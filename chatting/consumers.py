@@ -113,7 +113,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         if 'to_id' not in event.keys():
             event['to_id'] = self.user_id
 
-        await self.send_json(event)
+        if not await self.is_blocked_user(event['from_id']):
+            await self.send_json(event)
 
     @database_sync_to_async
     def extract_online_friends(self):
