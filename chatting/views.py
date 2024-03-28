@@ -92,6 +92,7 @@ class SystemMessageView(APIView):
                 }
                 if data.get('type') == 'invite_game' and data.get('room_id') is not None:
                     message_to_send['room_id'] = data['room_id']
+                    message_to_send['opponent_id'] = data['opponent_id']
 
                 async_to_sync(channel_layer.send)(target_user.channel_name, message_to_send)
                 return Response(status=status.HTTP_200_OK)

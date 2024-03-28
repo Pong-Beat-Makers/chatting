@@ -23,3 +23,4 @@ class SystemMessageSerializer(serializers.Serializer):
     message = serializers.CharField()
     type = serializers.CharField(required=False)
     room_id = serializers.CharField(required=False)
+    opponent_id = serializers.IntegerField(required=False)
