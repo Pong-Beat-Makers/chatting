@@ -51,12 +51,14 @@ path : /ws/chatting/ (동일)
 설명 : 온라인 상태의 유저 닉네임 제공
 ```json
 {
+    "type": "chat_message",
     "message": "You have successfully logged",
     "online_friends": [
         ["<user_id1>",
         "<user_id2>"]
     ],
-    "to_id" : "<수신자 id>"
+    "to_id" : "<수신자 id>",
+    "time": "<ISO 8601 형식의 시각>"
 }
 ```
 
@@ -209,6 +211,16 @@ description : 외부에서 요청이 아닌 시스템 내부에서 요청
 {
   "target_id": "<전송하고자 하는 유저 id>",
   "message": "<메시지 내용>"
+}
+```
+
+토너먼트 메시지 전송 시
+```json
+{
+  "type" : "invite_game",
+  "target_id": "<전송하고자 하는 유저 id>",
+  "message" : "<메시지 내용>",
+  "room_id" : "<uuid room id>"
 }
 ```
    

@@ -21,3 +21,5 @@ class BlockedUsersSerializer(serializers.ModelSerializer):
 class SystemMessageSerializer(serializers.Serializer):
     target_id = serializers.IntegerField()
     message = serializers.CharField()
+    type = serializers.CharField(required=False)
+    room_id = serializers.CharField(required=False)

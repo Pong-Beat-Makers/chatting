@@ -110,11 +110,11 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         online_friends_list = await self.extract_online_friends()
 
         message = {
+            "type" : "system_message",
             "message": "You have successfully logged",
             "online_friends": online_friends_list,
-            "to_id": self.user_id
         }
-        await self.send_json(message)
+        await self.system_message(message)
 
     async def invite_game(self, event):
         event['time'] = str(datetime.datetime.now().isoformat())
