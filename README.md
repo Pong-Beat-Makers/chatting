@@ -213,6 +213,16 @@ description : 외부에서 요청이 아닌 시스템 내부에서 요청
   "message": "<메시지 내용>"
 }
 ```
+
+토너먼트 메시지 전송 시
+```json
+{
+  "type" : "invite_game",
+  "target_id": "<전송하고자 하는 유저 id>",
+  "message" : "<메시지 내용>",
+  "room_id" : "<uuid room id>"
+}
+```
    
 응답 : json
 
