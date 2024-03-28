@@ -67,8 +67,16 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
             data = {
                 "type": "invite_game",
                 "from_id": self.user_id,
-                "room_id": str(uuid.uuid4()),
             }
+            if 'status' in content.keys() and content['status'] == 'invite':
+                data['room_id'] = str(uuid.uuid4())
+                data['status'] = content['status']
+            elif 'status' in content.keys() and content['status'] == 'cancel':
+                data['status'] = content['status']
+            else:
+                print('wrong syntax in invite_game')
+                return
+
             await self.channel_layer.send(target_channel_name, data)
             data['to_id'] = int(target_id)
             await self.invite_game(data)
@@ -113,7 +121,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         if 'to_id' not in event.keys():
             event['to_id'] = self.user_id
 
-        await self.send_json(event)
+        if not await self.is_blocked_user(event['from_id']):
+            await self.send_json(event)
 
     @database_sync_to_async
     def extract_online_friends(self):
