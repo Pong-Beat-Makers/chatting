@@ -254,10 +254,13 @@ description : 해당하는 유저가 없거나 오프라인일 때
 
 요청 : json
 
+설명 : 초대시 invite, 초대 취소 시 cancel
+
 ```json
 {
   "target_id": "<초대하고자 하는 대상 id>",
-  "type" : "invite_game"
+  "type" : "invite_game",
+  "status" : "<'invite' or 'cancel'>"
 }
 ```
 

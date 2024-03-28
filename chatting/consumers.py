@@ -67,8 +67,16 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
             data = {
                 "type": "invite_game",
                 "from_id": self.user_id,
-                "room_id": str(uuid.uuid4()),
             }
+            if 'status' in content.keys() and content['status'] == 'invite':
+                data['room_id'] = str(uuid.uuid4())
+                data['status'] = content['status']
+            elif 'status' in content.keys() and content['status'] == 'cancel':
+                data['status'] = content['status']
+            else:
+                print('wrong syntax in invite_game')
+                return
+
             await self.channel_layer.send(target_channel_name, data)
             data['to_id'] = int(target_id)
             await self.invite_game(data)
