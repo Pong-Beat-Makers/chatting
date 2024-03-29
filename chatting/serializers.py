@@ -24,3 +24,11 @@ class SystemMessageSerializer(serializers.Serializer):
     type = serializers.CharField(required=False)
     room_id = serializers.CharField(required=False)
     opponent_id = serializers.IntegerField(required=False)
+
+class OnlineUsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChattingUser
+        fields = ['id', 'is_online']
+
+
+

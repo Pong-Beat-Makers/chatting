@@ -8,7 +8,7 @@ from .authentication import authenticate
 from .models import ChattingUser
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
+from .serializers import OnlineUsersSerializer
 
 class BlockingView(APIView):
     def post(self, request):
@@ -98,3 +98,21 @@ class SystemMessageView(APIView):
                 return Response(status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OnlineView(APIView):
+    def get(self, request):
+        try:
+            user_data = authenticate(request.headers.get('Authorization').split()[1])
+        except Exception as e:
+            return Response({'error': 'Authorization header is required'}, status=status.HTTP_401_UNAUTHORIZED)
+        if user_data is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        id = request.query_params.get('id')
+        if not id:
+            return Response({'error': 'id parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
+        query = ChattingUser.objects.filter(id=id)
+        if query.count() == 0:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OnlineUsersSerializer(query.first())
+        return Response(serializer.data, status=status.HTTP_200_OK)

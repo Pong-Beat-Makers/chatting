@@ -245,7 +245,10 @@ description : 해당하는 유저가 없거나 오프라인일 때
 
 ---
 
-### 실시간 친구 온라인 상태 확인
+## 온라인 상태 관련
+
+
+### 웹소켓에서 실시간 온라인 상태 전송 
 
 응답 : json
 
@@ -257,6 +260,25 @@ description : 해당하는 유저가 없거나 오프라인일 때
     "to_id" : "<수신자 id>",
     "status": "<online or offline>",
     "time": "<ISO 8601 형식의 시각>"
+}
+```
+
+### restapi를 통해 특정 유저 온라인 조회
+
+- path : api/chatting/is-online/?id=<조회할 id>
+
+- method : GET
+
+- 필요 데이터 : 
+  - id: query parameter
+  - access_token : Authorization header
+
+- 응답 : json
+
+```json
+{
+    "id": "<user id : int>",
+    "is_online":  "<true or false>"
 }
 ```
 
