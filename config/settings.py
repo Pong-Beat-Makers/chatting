@@ -27,7 +27,8 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG', default=False)
 
 ALLOWED_HOSTS = [
-    'localhost',
+    os.environ.get('DOMAIN', 'localhost'),
+    'chatting',
 ]
 
 
