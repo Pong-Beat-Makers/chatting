@@ -107,6 +107,7 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(event)
 
     async def send_successful_login(self):
+        self.friends_list = await self.get_friends_list()
         online_friends_list = await self.extract_online_friends()
 
         message = {
@@ -147,8 +148,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(event)
 
     async def broadcast_status(self, online_or_offline: str):
-        self.friends_list = await self.get_friends_list()
-        for friend in self.friends_list:
+        friends_added_me_list = await self.get_friends_added_me_list()
+        for friend in friends_added_me_list:
             message = {
                 "type": "send_status",
                 "from_id": self.user_id,
@@ -162,6 +163,13 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
     async def get_friends_list(self):
         url = os.environ.get('USER_MANAGEMENT_URL')
         res = requests.get(url + f's2sapi/user-management/friends/?id={self.user_id}')
+        if res.status_code != 200:
+            return None
+        return res.json()
+
+    async def get_friends_added_me_list(self):
+        url = os.environ.get('USER_MANAGEMENT_URL')
+        res = requests.get(url + f's2sapi/user-management/friends/friendaddme/?id={self.user_id}')
         if res.status_code != 200:
             return None
         return res.json()
