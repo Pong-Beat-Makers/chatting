@@ -52,7 +52,7 @@ path : /ws/chatting/ (동일)
 ```json
 {
     "type": "system_message",
-    "message": "You have successfully logged",
+    "message": "You have successfully logged in",
     "online_friends": [
         ["<user_id1>",
         "<user_id2>"]

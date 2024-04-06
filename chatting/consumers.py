@@ -111,8 +111,8 @@ class ChattingConsumer(AsyncJsonWebsocketConsumer):
         online_friends_list = await self.extract_online_friends()
 
         message = {
-            "type" : "system_message",
-            "message": "You have successfully logged",
+            "type": "system_message",
+            "message": "You have successfully logged in",
             "online_friends": online_friends_list,
         }
         await self.system_message(message)
